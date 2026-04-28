@@ -105,23 +105,35 @@ def save_line_message_to_manus(user_id: str, user_message: str, message_type: st
         print(f"Error saving message: {e}")
         return False
 
-@app.route("/webhook/line", methods=['POST'])
+@app.route("/webhook/line", methods=["POST"])
 def line_webhook():
-    signature = request.headers.get('X-Line-Signature')
+    signature = request.headers.get("X-Line-Signature")
     body = request.get_data(as_text=True)
+
+    print(f"DEBUG: LINE Webhook received. Headers: {request.headers}, Body: {body}")
 
     # LINEの検証リクエストは署名がない、または空のボディで来る場合があるため、ここで処理
     if not signature or not body:
         print("DEBUG: LINE webhook received a request without signature or empty body. Returning OK for verification.")
-        return 'OK'
+        return "OK"
     
+    # bodyがJSON形式で、eventsが空のリストの場合も検証リクエストとみなす
+    try:
+        json_body = json.loads(body)
+        if "events" in json_body and len(json_body["events"]) == 0:
+            print("DEBUG: LINE webhook received an empty events array. Returning OK for verification.")
+            return "OK"
+    except json.JSONDecodeError:
+        # JSON形式でない場合は通常のメッセージとして処理を続行
+        pass
+
     try:
         line_handler.handle(body, signature)
     except InvalidSignatureError:
         print("DEBUG: InvalidSignatureError on LINE webhook. Aborting with 400.")
         abort(400)
     
-    return 'OK'
+    return "OK"
 
 @line_handler.add(MessageEvent, message=TextMessage)
 def handle_message(event: MessageEvent):
@@ -129,7 +141,7 @@ def handle_message(event: MessageEvent):
     user_id = event.source.user_id
     
     current_mode = user_mode_map.get(user_id, "normal")
-    print(f"DEBUG: Received message from {user_id}: '{user_message}' (Mode: {current_mode})")
+    print(f"DEBUG: Received message from {user_id}: \'{user_message}\' (Mode: {current_mode})")
     
     if current_mode == "normal" and user_message in ["AIに質問する", "設定について聞く", "AIに質問"]:
         user_mode_map[user_id] = "ai"
@@ -137,7 +149,7 @@ def handle_message(event: MessageEvent):
         if AI_MODE_RICH_MENU_ID:
             switch_rich_menu(user_id, AI_MODE_RICH_MENU_ID)
         
-        line_bot_api.push_message(user_id, TextSendMessage(text="AIモードを起動しました。LOGGの設定方法などについてご質問いただけます。\n\n※回答の生成に10〜20秒ほどお時間をいただく場合があります。少々お待ちください。"))
+        line_bot_api.push_message(user_id, TextSendMessage(text="AIモードを起動しました。LOGGの設定方法などについてご質問いただけます。\\n\\n※回答の生成に10〜20秒ほどお時間をいただく場合があります。少々お待ちください。"))
         return
     
     if current_mode == "ai" and user_message == "AIモードを終了する":
@@ -178,7 +190,7 @@ LOGGシステムのLINEサポートAIとして、お客様からのメッセー�
 【出力形式】
 回答は丁寧で簡潔な日本語でお願いします。
 """
-        full_prompt = f"{system_instruction}\n\nお客様からのメッセージ: {user_message}"
+        full_prompt = f"{system_instruction}\\n\\nお客様からのメッセージ: {user_message}"
         
         payload = {
             "message": {
@@ -202,7 +214,7 @@ LOGGシステムのLINEサポートAIとして、お客様からのメッセー�
     except Exception as e:
         print(f"Error creating task: {e}")
 
-@app.route("/webhook/manus", methods=['POST'])
+@app.route("/webhook/manus", methods=["POST"])
 def manus_webhook():
     data = request.json
     if not data:
