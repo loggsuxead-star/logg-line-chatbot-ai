@@ -93,7 +93,7 @@ def save_line_message_to_manus(user_id: str, user_message: str, message_type: st
     try:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"{timestamp}_{user_id}_{message_type}.txt"
-        content = f"ユーザーID: {user_id}\n日時: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\nメッセージタイプ: {message_type}\n\n内容:\n{user_message}"
+        content = f"ユーザーID: {user_id}\n日時: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\nメッセージタイプ: {message_type}\n\n内容:\n{user_message}"
         
         local_backup_dir = "backups"
         os.makedirs(local_backup_dir, exist_ok=True)
@@ -108,13 +108,17 @@ def save_line_message_to_manus(user_id: str, user_message: str, message_type: st
 @app.route("/webhook/line", methods=['POST'])
 def line_webhook():
     signature = request.headers.get('X-Line-Signature')
-    if not signature:
-        abort(400)
-    
     body = request.get_data(as_text=True)
+
+    # LINEの検証リクエストは署名がない、または空のボディで来る場合があるため、ここで処理
+    if not signature or not body:
+        print("DEBUG: LINE webhook received a request without signature or empty body. Returning OK for verification.")
+        return 'OK'
+    
     try:
         line_handler.handle(body, signature)
     except InvalidSignatureError:
+        print("DEBUG: InvalidSignatureError on LINE webhook. Aborting with 400.")
         abort(400)
     
     return 'OK'
