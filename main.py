@@ -62,7 +62,7 @@ def check_and_reset_ai_mode_timeout():
                 try:
                     user_mode_map[user_id] = "normal"
                     switch_rich_menu(user_id, DEFAULT_RICH_MENU_ID)
-                    line_bot_api.push_message(user_id, TextSendMessage(text="AIモードが10分間不使用のため、自動的に通常モードに戻りました。"))
+                    line_bot_api.push_message(user_id, TextSendMessage(text="AIモードが10分間不使用のため、自動的に通常モードに戻りました。ご質問があれば、いつでもお気軽にお尋ねやすください。"))
                 except Exception as e:
                     print(f"DEBUG: Error resetting user {user_id}: {e}")
         except Exception as e:
@@ -74,8 +74,6 @@ def line_webhook():
     signature = request.headers.get("X-Line-Signature")
     body = request.get_data(as_text=True)
 
-    print(f"DEBUG: Webhook received. Signature: {signature}")
-    
     if not signature or not body:
         return "OK"
     
@@ -84,15 +82,12 @@ def line_webhook():
         if "events" in json_body and len(json_body["events"]) == 0:
             return "OK"
         
-        # 署名検証を試みる
         try:
             line_handler.handle(body, signature)
         except InvalidSignatureError:
-            print("DEBUG: InvalidSignatureError. Checking if it's a valid message despite signature error...")
-            # 署名エラーでも、中身が正しいLINEイベントであれば処理を続行する（デバッグ用）
+            print("DEBUG: InvalidSignatureError. Handling manually...")
             if "events" in json_body and len(json_body["events"]) > 0:
                 for event_data in json_body["events"]:
-                    # 手動でイベントを処理
                     if event_data.get("type") == "message" and event_data.get("message", {}).get("type") == "text":
                         handle_manual_event(event_data)
             else:
@@ -104,26 +99,24 @@ def line_webhook():
     return "OK"
 
 def handle_manual_event(event_data):
-    """署名検証に失敗した場合でも、イベントデータから直接処理を行う"""
     user_id = event_data.get("source", {}).get("userId")
     user_message = event_data.get("message", {}).get("text", "").strip()
     if not user_id or not user_message:
         return
 
     current_mode = user_mode_map.get(user_id, "normal")
-    print(f"DEBUG: Manual handle - User: {user_id}, Msg: {user_message}, Mode: {current_mode}")
-
+    
     if current_mode == "normal" and user_message in ["AIに質問する", "設定について聞く", "AIに質問"]:
         user_mode_map[user_id] = "ai"
         user_last_activity[user_id] = datetime.now()
         switch_rich_menu(user_id, AI_MODE_RICH_MENU_ID)
-        line_bot_api.push_message(user_id, TextSendMessage(text="AIモードを起動しました。"))
+        line_bot_api.push_message(user_id, TextSendMessage(text="AIモードを起動しました。LOGGの設定方法などについてご質問いただけます。\\n\\n※回答の生成に10〜20秒ほどお時間をいただく場合があります。少々お待ちください。"))
         return
 
     if current_mode == "ai" and user_message == "AIモードを終了する":
         user_mode_map[user_id] = "normal"
         switch_rich_menu(user_id, DEFAULT_RICH_MENU_ID)
-        line_bot_api.push_message(user_id, TextSendMessage(text="AIモードを終了いたします。"))
+        line_bot_api.push_message(user_id, TextSendMessage(text="AIモードを終了いたします。ご不明な点などございましたら、またお気軽にお尋ねやすください。"))
         return
 
     if current_mode == "ai":
@@ -140,11 +133,11 @@ def handle_message(event: MessageEvent):
         user_mode_map[user_id] = "ai"
         user_last_activity[user_id] = datetime.now()
         switch_rich_menu(user_id, AI_MODE_RICH_MENU_ID)
-        line_bot_api.push_message(user_id, TextSendMessage(text="AIモードを起動しました。"))
+        line_bot_api.push_message(user_id, TextSendMessage(text="AIモードを起動しました。LOGGの設定方法などについてご質問いただけます。\\n\\n※回答の生成に10〜20秒ほどお時間をいただく場合があります。少々お待ちください。"))
     elif current_mode == "ai" and user_message == "AIモードを終了する":
         user_mode_map[user_id] = "normal"
         switch_rich_menu(user_id, DEFAULT_RICH_MENU_ID)
-        line_bot_api.push_message(user_id, TextSendMessage(text="AIモードを終了いたします。"))
+        line_bot_api.push_message(user_id, TextSendMessage(text="AIモードを終了いたします。ご不明な点などございましたら、またお気軽にお尋ねやすください。"))
     elif current_mode == "ai":
         user_last_activity[user_id] = datetime.now()
         create_manus_task(user_id, user_message)
@@ -152,8 +145,28 @@ def handle_message(event: MessageEvent):
 def create_manus_task(user_id, user_message):
     try:
         headers = {"Content-Type": "application/json", "x-manus-api-key": MANUS_API_KEY}
+        
+        system_instruction = """
+あなたはLOGGシステムのLINEサポートAIです。
+
+【役割】
+LOGGシステムのLINEサポートAIとして、お客様からのメッセージを受け取った際に、丁寧かつ簡潔な日本語で対応してください。
+
+【参照情報】
+提供された知識ベース（LOGGシステムの仕様書）のみを参考にしてください。
+お客様の個人情報やシステム内部のデータには絶対にアクセスしないでください。
+
+【回答ルール】
+もし知識ベースにない質問や、システム内部の調査が必要な場合は、深掘りせず以下のように回答してください：
+「申し訳ありませんが、この件については担当者より改めてご連絡させていただきます。」
+
+【出力形式】
+回答は丁寧で簡潔な日本語でお願いします。
+"""
+        full_prompt = f"{system_instruction}\\n\\nお客様からのメッセージ: {user_message}"
+        
         payload = {
-            "message": {"content": [{"type": "text", "text": f"お客様からのメッセージ: {user_message}"}]},
+            "message": {"content": [{"type": "text", "text": full_prompt}]},
             "interactive_mode": False
         }
         with httpx.Client() as client:
