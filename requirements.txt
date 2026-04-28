@@ -1,6 +1,5 @@
-fastapi
-uvicorn
-mangum
+flask
+gunicorn
 line-bot-sdk
 httpx
 cryptography
