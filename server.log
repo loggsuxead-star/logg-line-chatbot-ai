@@ -1,0 +1,86 @@
+nohup: ignoring input
+/home/ubuntu/manus-line-webhook/main.py:54: LineBotSdkDeprecatedIn30: Call to deprecated class LineBotApi. (Use v3 class; linebot.v3.<feature>. See https://github.com/line/line-bot-sdk-python/blob/master/README.rst for more details.) -- Deprecated since version 3.0.0.
+  line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
+/home/ubuntu/manus-line-webhook/main.py:55: LineBotSdkDeprecatedIn30: Call to deprecated class WebhookHandler. (Use 'from linebot.v3.webhook import WebhookHandler' instead. See https://github.com/line/line-bot-sdk-python/blob/master/README.rst for more details.) -- Deprecated since version 3.0.0.
+  line_handler = WebhookHandler(LINE_CHANNEL_SECRET)
+/home/ubuntu/manus-line-webhook/main.py:351: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("startup")
+INFO:     Started server process [11996]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+/home/ubuntu/manus-line-webhook/main.py:82: LineBotSdkDeprecatedIn30: Call to deprecated method link_rich_menu_to_user. (Use 'from linebot.v3.messaging import MessagingApi' and 'MessagingApi(...).link_rich_menu_id_to_user(...)' instead. See https://github.com/line/line-bot-sdk-python/blob/master/README.rst for more details.) -- Deprecated since version 3.0.0.
+  line_bot_api.link_rich_menu_to_user(user_id, rich_menu_id)
+/home/ubuntu/manus-line-webhook/main.py:237: LineBotSdkDeprecatedIn30: Call to deprecated method push_message. (Use 'from linebot.v3.messaging import MessagingApi' and 'MessagingApi(...).push_message(...)' instead. See https://github.com/line/line-bot-sdk-python/blob/master/README.rst for more details.) -- Deprecated since version 3.0.0.
+  line_bot_api.push_message(user_id, TextSendMessage(text="AIモードを起動しました。LOGGの設定方法などについてご質問いただけます。\n\n※回答の生成に10〜20秒ほどお時間をいただく場合があります。少々お待ちください。"))
+DEBUG: Timeout checker thread started
+DEBUG: Received message from U396825d0a7d7f26cba3fd50fe94cae92: 'AIに質問する' (Mode: normal)
+DEBUG: Error switching rich menu: LineBotApiError: status_code=404, request_id=aad650c6-c178-494a-98ef-8b4a3c0369a0, error_response={"details": [], "message": "Not found"}, headers={'Server': 'legy', 'Content-Type': 'application/json', 'x-content-type-options': 'nosniff', 'x-frame-options': 'DENY', 'x-line-request-id': 'aad650c6-c178-494a-98ef-8b4a3c0369a0', 'x-xss-protection': '1; mode=block', 'Content-Length': '23', 'Expires': 'Tue, 21 Apr 2026 03:10:05 GMT', 'Cache-Control': 'max-age=0, no-cache, no-store', 'Pragma': 'no-cache', 'Date': 'Tue, 21 Apr 2026 03:10:05 GMT', 'Connection': 'close'}
+DEBUG: User U396825d0a7d7f26cba3fd50fe94cae92 switched to AI mode
+INFO:     10.76.207.1:43260 - "POST /webhook/line HTTP/1.1" 200 OK
+DEBUG: Received message from U396825d0a7d7f26cba3fd50fe94cae92: '動作確認のテストです' (Mode: ai)
+DEBUG: Message backed up locally: 20260420_231035_U396825d0a7d7f26cba3fd50fe94cae92_user.txt
+DEBUG: Manus API v2 response: 200
+DEBUG: Task created for user U396825d0a7d7f26cba3fd50fe94cae92 in AI mode. Task ID: 6cDc7fTiH8ohpeWgKgeQ9Y
+INFO:     10.76.207.1:53820 - "POST /webhook/line HTTP/1.1" 200 OK
+DEBUG: Webhook request received.
+INFO:     10.76.207.1:43134 - "POST /webhook/manus HTTP/1.1" 200 OK
+/home/ubuntu/manus-line-webhook/main.py:341: LineBotSdkDeprecatedIn30: Call to deprecated method push_message. (Use 'from linebot.v3.messaging import MessagingApi' and 'MessagingApi(...).push_message(...)' instead. See https://github.com/line/line-bot-sdk-python/blob/master/README.rst for more details.) -- Deprecated since version 3.0.0.
+  line_bot_api.push_message(user_id, TextSendMessage(text=result_message))
+DEBUG: Webhook request received.
+DEBUG: Successfully pushed result to user U396825d0a7d7f26cba3fd50fe94cae92
+INFO:     10.76.207.1:43150 - "POST /webhook/manus HTTP/1.1" 200 OK
+/home/ubuntu/manus-line-webhook/main.py:249: LineBotSdkDeprecatedIn30: Call to deprecated method push_message. (Use 'from linebot.v3.messaging import MessagingApi' and 'MessagingApi(...).push_message(...)' instead. See https://github.com/line/line-bot-sdk-python/blob/master/README.rst for more details.) -- Deprecated since version 3.0.0.
+  line_bot_api.push_message(user_id, TextSendMessage(text="AIモードを終了いたします。ご不明な点などございましたら、またお気軽にお尋ねやすください。"))
+DEBUG: Received message from U396825d0a7d7f26cba3fd50fe94cae92: 'AIモードを終了する' (Mode: ai)
+DEBUG: Error switching rich menu: LineBotApiError: status_code=404, request_id=7d9241ab-9b66-4f8b-854c-8ab8b53955dc, error_response={"details": [], "message": "Not found"}, headers={'Server': 'legy', 'Content-Type': 'application/json', 'x-content-type-options': 'nosniff', 'x-frame-options': 'DENY', 'x-line-request-id': '7d9241ab-9b66-4f8b-854c-8ab8b53955dc', 'x-xss-protection': '1; mode=block', 'Content-Length': '23', 'Expires': 'Tue, 21 Apr 2026 03:10:58 GMT', 'Cache-Control': 'max-age=0, no-cache, no-store', 'Pragma': 'no-cache', 'Date': 'Tue, 21 Apr 2026 03:10:58 GMT', 'Connection': 'close'}
+DEBUG: User U396825d0a7d7f26cba3fd50fe94cae92 switched to normal mode
+INFO:     10.76.207.1:50448 - "POST /webhook/line HTTP/1.1" 200 OK
+INFO:     10.144.76.1:53402 - "HEAD /webhook/line HTTP/1.1" 405 Method Not Allowed
+INFO:     10.144.76.1:53416 - "HEAD /webhook/manus HTTP/1.1" 405 Method Not Allowed
+INFO:     10.144.76.1:53432 - "GET /webhook/line HTTP/1.1" 405 Method Not Allowed
+INFO:     10.144.76.1:53442 - "GET /webhook/manus HTTP/1.1" 405 Method Not Allowed
+INFO:     10.144.76.1:53458 - "GET /webhook/line HTTP/1.1" 405 Method Not Allowed
+INFO:     10.144.76.1:53474 - "GET /webhook/manus HTTP/1.1" 405 Method Not Allowed
+INFO:     10.144.76.1:53476 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     10.144.76.1:53482 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+DEBUG: Received message from U396825d0a7d7f26cba3fd50fe94cae92: 'よくある質問Q&A' (Mode: normal)
+DEBUG: User U396825d0a7d7f26cba3fd50fe94cae92 is in normal mode. Message not sent to AI.
+INFO:     10.144.76.1:47108 - "POST /webhook/line HTTP/1.1" 200 OK
+DEBUG: Received message from U396825d0a7d7f26cba3fd50fe94cae92: '流入コードQ&A' (Mode: normal)
+DEBUG: User U396825d0a7d7f26cba3fd50fe94cae92 is in normal mode. Message not sent to AI.
+INFO:     10.144.76.1:47118 - "POST /webhook/line HTTP/1.1" 200 OK
+DEBUG: Received message from U396825d0a7d7f26cba3fd50fe94cae92: '流入コードQ1' (Mode: normal)
+DEBUG: User U396825d0a7d7f26cba3fd50fe94cae92 is in normal mode. Message not sent to AI.
+INFO:     10.144.76.1:41736 - "POST /webhook/line HTTP/1.1" 200 OK
+DEBUG: Received message from U396825d0a7d7f26cba3fd50fe94cae92: '流入コードQ&A' (Mode: normal)
+DEBUG: User U396825d0a7d7f26cba3fd50fe94cae92 is in normal mode. Message not sent to AI.
+INFO:     10.144.76.1:41752 - "POST /webhook/line HTTP/1.1" 200 OK
+DEBUG: Received message from U396825d0a7d7f26cba3fd50fe94cae92: '解決しない' (Mode: normal)
+DEBUG: User U396825d0a7d7f26cba3fd50fe94cae92 is in normal mode. Message not sent to AI.
+INFO:     10.144.76.1:50680 - "POST /webhook/line HTTP/1.1" 200 OK
+DEBUG: Received message from U396825d0a7d7f26cba3fd50fe94cae92: 'AIに質問する' (Mode: normal)
+DEBUG: Error switching rich menu: LineBotApiError: status_code=404, request_id=5b73a78e-002c-4292-a4b5-746137f2d681, error_response={"details": [], "message": "Not found"}, headers={'Server': 'legy', 'Content-Type': 'application/json', 'x-content-type-options': 'nosniff', 'x-frame-options': 'DENY', 'x-line-request-id': '5b73a78e-002c-4292-a4b5-746137f2d681', 'x-xss-protection': '1; mode=block', 'Content-Length': '23', 'Expires': 'Tue, 21 Apr 2026 06:49:20 GMT', 'Cache-Control': 'max-age=0, no-cache, no-store', 'Pragma': 'no-cache', 'Date': 'Tue, 21 Apr 2026 06:49:20 GMT', 'Connection': 'close'}
+DEBUG: User U396825d0a7d7f26cba3fd50fe94cae92 switched to AI mode
+INFO:     10.144.76.1:50688 - "POST /webhook/line HTTP/1.1" 200 OK
+DEBUG: Received message from U396825d0a7d7f26cba3fd50fe94cae92: 'こんにちわ' (Mode: ai)
+DEBUG: Message backed up locally: 20260421_024932_U396825d0a7d7f26cba3fd50fe94cae92_user.txt
+DEBUG: Manus API v2 response: 200
+DEBUG: Task created for user U396825d0a7d7f26cba3fd50fe94cae92 in AI mode. Task ID: n5bRyxzXNsHaZ9yfVn8XRj
+INFO:     10.144.76.1:32786 - "POST /webhook/line HTTP/1.1" 200 OK
+DEBUG: Webhook request received.
+INFO:     10.144.76.1:32796 - "POST /webhook/manus HTTP/1.1" 200 OK
+DEBUG: Webhook request received.
+INFO:     10.144.76.1:43992 - "POST /webhook/manus HTTP/1.1" 200 OK
+DEBUG: Webhook request received.
+DEBUG: Successfully pushed result to user U396825d0a7d7f26cba3fd50fe94cae92
+INFO:     10.144.76.1:44006 - "POST /webhook/manus HTTP/1.1" 200 OK
+DEBUG: Received message from U396825d0a7d7f26cba3fd50fe94cae92: 'AIモードを終了する' (Mode: ai)
+DEBUG: Error switching rich menu: LineBotApiError: status_code=404, request_id=1a5bf9f3-575d-4262-87a4-5e69ef12cea5, error_response={"details": [], "message": "Not found"}, headers={'Server': 'legy', 'Content-Type': 'application/json', 'x-content-type-options': 'nosniff', 'x-frame-options': 'DENY', 'x-line-request-id': '1a5bf9f3-575d-4262-87a4-5e69ef12cea5', 'x-xss-protection': '1; mode=block', 'Content-Length': '23', 'Expires': 'Tue, 21 Apr 2026 06:49:50 GMT', 'Cache-Control': 'max-age=0, no-cache, no-store', 'Pragma': 'no-cache', 'Date': 'Tue, 21 Apr 2026 06:49:50 GMT', 'Connection': 'close'}
+DEBUG: User U396825d0a7d7f26cba3fd50fe94cae92 switched to normal mode
+INFO:     10.144.76.1:50736 - "POST /webhook/line HTTP/1.1" 200 OK

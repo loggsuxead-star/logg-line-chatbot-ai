@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+mangum
+line-bot-sdk
+httpx
+cryptography
+python-dotenv
+pydantic
+pydantic-settings
